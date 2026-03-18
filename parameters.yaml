@@ -1,0 +1,29 @@
+#Parameters for MTB model
+metadata:
+ save_every: 20 #Saving every ith step 
+grid:
+ Lx: 40e3 #Box length in um 
+ Ly: 2e3 #Box length in um
+ Nx: 2000
+ Ny: 100 #Nx and Ny such that dx dy is aprox 20 um
+ T: 1000 #Total runtime
+ dt: 4e-2 #Timestep
+
+diff:
+ D_o2: 2120 #Diffusion of oxygen in water in um**2/s
+ D_bact: 1000 #Diffusion of self-propelling bacteria (ecoli) in water in um**2/s
+
+o2:
+ c0_o2: 216 #Oxygen concentration at the H2O/O2 interface in uM
+ ca_o2: 0.75 #Oxygen concentration at which bacteria consumption halves in uM
+ copt_o2: 10 #Oxygen concentration optimal for bacteria (will search this) in uM
+ cmin_o2: 1e-6 #Oxygen concentration (min) to avoid 1/0 divisions in uM
+
+bact:
+ p: 5.2e-5 #Proliferating rate for bacteria in 1/s
+ k_cons: 1.66e-12 #Consumption rate in uM per second per cell
+ K: 1.0 #Maximum bacterial density in 1 O.D. (Optical Density)
+ chi: 280 #Chemotactic sensitivity in um**2/s (Cremer et al.)
+ b0: 0.3 #Initial bacteria concentration in the inoculum or homogeneous 
+
+
