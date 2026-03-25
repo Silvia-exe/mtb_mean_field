@@ -122,19 +122,27 @@ def animate_colormaps(mtb, steps=100, interval=20):
     return anim
 
 def plot_colormaps(mtb):
-
-    slice = int(mtb.Ny/2)
+    step_x = max(1, mtb.Nx // 11)
+    step_y = max(1, mtb.Ny // 6)
+    slice = int(mtb.Ny//2)
 
     x = np.linspace(0, mtb.Lx, mtb.Nx)
     y = np.linspace(0, mtb.Ly, mtb.Ny)
+
+    X, Y = np.meshgrid(x, y)
 
     x_ticks = np.linspace(0, mtb.Lx, 5)
     y_ticks = np.linspace(0, mtb.Ly, 5)
 
     oxygen = mtb.c.value.reshape((mtb.Ny,mtb.Nx))
     bacteria = mtb.b.value.reshape((mtb.Ny, mtb.Nx))
-    aerotaxis = mtb.aerotaxis_magnitude().reshape((mtb.Ny, mtb.Nx))
     consumption = mtb.consumption_magnitude().reshape((mtb.Ny, mtb.Nx))
+    aerotaxis_x, aerotaxis_y = mtb.aerotaxis_vectors()
+    U = aerotaxis_x.reshape((mtb.Ny, mtb.Nx))
+    V = aerotaxis_y.reshape((mtb.Ny, mtb.Nx))
+    mag = np.sqrt(U**2 + V**2) + 1e-12
+    U_n = U/mag
+    V_n = V/mag
 
     fig, axes = plt.subplots(4, 2, figsize=(12, 10))
     fig.suptitle('MTB model data', fontsize=16)
@@ -167,7 +175,12 @@ def plot_colormaps(mtb):
     axes[1, 1].set_xlabel(r'x [$\mu m$]')
     axes[1,1].sharex(axes[0,1])
     
-    im3 = axes[2, 0].imshow(aerotaxis, cmap='jet', aspect = 'auto', extent=[0, mtb.Lx, 0, mtb.Ly], origin = 'lower')
+    im3 = axes[2, 0].imshow(mag, cmap='jet', aspect = 'auto', extent=[0, mtb.Lx, 0, mtb.Ly], origin = 'lower')
+    axes[2, 0].quiver(X[::step_y, ::step_x],Y[::step_y, ::step_x],U_n[::step_y, ::step_x],V_n[::step_y, ::step_x],color='white', scale = None, width=0.01,
+    headwidth=3,
+    headlength=4,
+    headaxislength=3,
+    pivot='middle')
     axes[2, 0].axhline(y=slice*(mtb.Ly/(mtb.Ny-1)), color='white', linestyle='--', linewidth=1)
     axes[2, 0].set_title('Taxis Magnitude')
     axes[2, 0].set_ylabel(r'y [$\mu m$]')
@@ -177,7 +190,7 @@ def plot_colormaps(mtb):
     cax = divider.append_axes("right", size="5%", pad=0.05)
     cbar3 = fig.colorbar(im3, cax=cax)
     cbar3.set_label(r'Velocity [$\mu m^2/s$]', fontsize=12)
-    im3_slice = axes[3,0].plot(x, aerotaxis[slice,:])
+    im3_slice = axes[3,0].plot(x, mag[slice,:])
     axes[3, 0].set_xlabel(r'x [$\mu m$]')
     axes[3,0].sharex(axes[2,0])
     
@@ -229,7 +242,7 @@ if __name__ == "__main__":
     #animate_colormaps(run)
 
     plot_colormaps(run)
-    run.run_save()
+    run.run()
     plot_colormaps(run)
   
 

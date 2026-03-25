@@ -2,12 +2,12 @@
 metadata:
  save_every: 20 #Saving every ith step 
 grid:
- Lx: 40e3 #Box length in um 
+ Lx: 4e3 #Box length in um 
  Ly: 2e3 #Box length in um
- Nx: 2000
+ Nx: 200
  Ny: 100 #Nx and Ny such that dx dy is aprox 20 um
- T: 1000 #Total runtime
- dt: 4e-2 #Timestep
+ T: 80 #Total runtime
+ dt: 4e-1 #Timestep
 
 diff:
  D_o2: 2120 #Diffusion of oxygen in water in um**2/s
@@ -16,7 +16,7 @@ diff:
 o2:
  c0_o2: 216 #Oxygen concentration at the H2O/O2 interface in uM
  ca_o2: 0.75 #Oxygen concentration at which bacteria consumption halves in uM
- copt_o2: 10 #Oxygen concentration optimal for bacteria (will search this) in uM
+ copt_o2: 5 #Oxygen concentration optimal for bacteria (will search this) in uM
  cmin_o2: 1e-6 #Oxygen concentration (min) to avoid 1/0 divisions in uM
 
 bact:
@@ -24,6 +24,12 @@ bact:
  k_cons: 1.66e-12 #Consumption rate in uM per second per cell
  K: 1.0 #Maximum bacterial density in 1 O.D. (Optical Density)
  chi: 280 #Chemotactic sensitivity in um**2/s (Cremer et al.)
- b0: 0.3 #Initial bacteria concentration in the inoculum or homogeneous 
+ b0: 0.3 #Initial bacteria concentration in the inoculum or homogeneous initial conditions
+ mu: 10.0 #1.2e-15 #Magnetic moment of bacteria, sensitivity to the external magnetic field in microT
+ gamma_r: 1.0 #1.2e-3 #Rotational drag for bacteria
 
+magnetism:
+ Bx: 0.5 #x component (0-1)
+ By: 0.5 #y component (0-1) 
+ B: 500 #Magnetic field magnitude in microT
 

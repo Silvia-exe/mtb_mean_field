@@ -35,7 +35,13 @@ class mtb:
             'k_cons': float(config['bact']['k_cons']),
             'K': float(config['bact']['K']),
             'chi': float(config['bact']['chi']),
-            'b0': float(config['bact']['b0'])
+            'b0': float(config['bact']['b0']),
+            'mu': float(config['bact']['mu']),
+            'gamma_r': float(config['bact']['gamma_r']),
+
+            'Bx': float(config['magnetism']['Bx']),
+            'By': float(config['magnetism']['By']),
+            'B': float(config['magnetism']['B']),
         }
 
         #TODO: implement check of parameters (Make them make sense!)
@@ -69,6 +75,12 @@ class mtb:
         self.K = params['K']
         self.chi = params['chi']
         self.b0 = params['b0']
+        self.mu = params['mu']
+        self.gamma_r = params['gamma_r']
+
+        self.B = params['B']
+        self.Bx = params['Bx']
+        self.By = params['By']
 
         self.dx, self.dy = self.Lx/(self.Nx-1), self.Ly/(self.Ny-1)
         self.t = np.arange(0,self.T,self.dt)
@@ -77,6 +89,13 @@ class mtb:
         self.b = CellVariable(mesh = self.mesh, name = 'bacteria', value = self.b0)
         self.c = CellVariable(mesh = self.mesh, name = 'oxygen', value = self.cmin_o2)
         self.c.constrain(self.c0_o2, where = self.mesh.facesLeft) 
+
+        self.Bx = self.B*self.Bx
+        self.By = self.B*self.By
+
+        self.m = CellVariable(mesh = self.mesh, name = 'velocity', rank = 1, value = (1.0,0.0))
+
+        
     
     def init_h5(self, save_every = 20, filename = 'mtb_simulation.h5'):
         self.h5file = h5py.File(filename, 'w')
@@ -114,15 +133,14 @@ class mtb:
         self.dset_b[i] = self.b.value.reshape((self.Ny, self.Nx))
         self.dset_t[i] = t
 
-    def aerotaxis_magnitude(self):
+    def aerotaxis_vectors(self):
         o2_diff = (self.c - self.copt_o2) / (self.c + self.copt_o2 + self.eps)
-        v = -self.chi * o2_diff * self.c.grad
+        v = -self.m * self.chi * o2_diff * self.c.grad
 
         flux_x = self.b.value * v[0].value
         flux_y = self.b.value * v[1].value
 
-        aerotaxis = np.sqrt(flux_x**2 + flux_y**2).reshape((self.Ny, self.Nx))
-        return aerotaxis
+        return [flux_x, flux_y]
     
     def consumption_magnitude(self):
         consumption = (self.consumption()*self.b).value
@@ -130,8 +148,10 @@ class mtb:
         return consumption
     
     def growth_magnitude(self):
-        return self.p * self.b * (1-(self.b/self.K))
-    
+        growth = self.p * self.b * (1-(self.b/self.K))
+        growth = growth.reshape((self.Ny, self.Nx))
+        return growth
+
     def init_oxygen(self, o2_file = None):
         if o2_file is None:
             eq = TransientTerm(var = self.c) == DiffusionTerm(coeff = self.D_o2, var = self.c)
@@ -177,15 +197,13 @@ class mtb:
 
         self.eq_c = TransientTerm(var=self.c) == DiffusionTerm(coeff = self.D_o2, var = self.c) - self.consumption()*self.b
         o2_diff = (self.c - self.copt_o2)/(self.c+self.copt_o2+self.eps)
-        v = - self.chi * o2_diff *self.c.grad
-
+        v0 = - self.chi * o2_diff * self.c.grad
         self.eq_b = TransientTerm( var = self.b) == DiffusionTerm(coeff = self.D_bact, var = self.b) \
-                                                - ConvectionTerm(coeff = v, var = self.b) \
+                                                - ConvectionTerm(coeff = v0, var = self.b) \
                                                 + self.p * self.b * (1-(self.b/self.K))
-
     def run(self):
 
-        self.c = self.init_oxygen(self.O2_init) 
+        #self.c = self.init_oxygen(self.O2_init) 
         #self.b = self.inoculum_center()
         self.build_equations()
         
