@@ -1,20 +1,17 @@
 #Parameters for MTB model
 metadata:
- save_every: 100 #Saving every ith step 
+ save_every: 20 #Saving every ith step 
 grid:
  Lx: 4e3 #Box length in um 
  Ly: 2e3 #Box length in um
  Nx: 200
  Ny: 100 #Nx and Ny such that dx dy is aprox 20 um
- T: 5000 #Total runtime
- dt: 5e-2 #Timestep
+ T: 80 #Total runtime
+ dt: 4e-1 #Timestep
 
 diff:
  D_o2: 2120 #Diffusion of oxygen in water in um**2/s
- D_bact: 100 #Diffusion of self-propelling bacteria (ecoli) in water in um**2/s
- D_r: 0.1 #Rotational diffusion in rad**2/s
- gamma_r: 0.3 #1.2e-3 #Rotational drag for bacteria. Relaxation timescale (1/how long until reorienting from a tumble) in s**-1
- beta_p: 0.3 #Sensitivity to chemotactic reorientation torque. 
+ D_bact: 1000 #Diffusion of self-propelling bacteria (ecoli) in water in um**2/s
 
 o2:
  c0_o2: 216 #Oxygen concentration at the H2O/O2 interface in uM
@@ -28,10 +25,11 @@ bact:
  K: 1.0 #Maximum bacterial density in 1 O.D. (Optical Density)
  chi: 280 #Chemotactic sensitivity in um**2/s (Cremer et al.)
  b0: 0.3 #Initial bacteria concentration in the inoculum or homogeneous initial conditions
- mu: 1.2e-15 #Magnetic moment of bacteria, sensitivity to the external magnetic field in microT
- v0: 10 #Self-propelling velocity of bacteria in um/s
+ mu: 10.0 #1.2e-15 #Magnetic moment of bacteria, sensitivity to the external magnetic field in microT
+ gamma_r: 1.0 #1.2e-3 #Rotational drag for bacteria
 
 magnetism:
- B_phi: 3.14 #Angle with respect to x axis. 0 directed in +x, 180 in -x
+ Bx: 0.5 #x component (0-1)
+ By: 0.5 #y component (0-1) 
  B: 500 #Magnetic field magnitude in microT
 
