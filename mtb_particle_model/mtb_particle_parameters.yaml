@@ -1,0 +1,31 @@
+grid:
+ Lx: 21.2
+ Ly: 20
+ Nx: 100
+ Ny: 100
+ T: 1
+ dt: 0.01
+ n_bact: 10 #Number of bacteria in the simulation
+
+noise:
+ k_B: 4.1e-3 #Boltzmann constant in pN um / KK
+ TK: 300 #Temperature in K
+ gamma_t: 0.1 #Translational drag for bacteria. Relaxation timescale in s**-1
+ gamma_r: 0.1 #Rotational drag for bacteria. Relaxation timescale in s**-1
+ 
+bacteria:
+ k_cons: 1.66e-12 #Consumption rate in uM per second per cell
+ chi: 280 #Chemotactic sensitivity in um**2/s (Cremer et al.)
+ mu: 1.2e-3 #Magnetic moment of bacteria, sensitivity to the external magnetic field in pN um / microT
+ v0: 10 #Self-propelling velocity of bacteria in um/s
+
+magnetic_field:
+ B: 500 #Magnetic field magnitude in microT
+ B_phi: 180
+
+o2:
+ D_o2: 2120 #Diffusion of oxygen in water in um**2/s
+ c0_o2: 216 #Oxygen concentration at the H2O/O2 interface in uM
+ ca_o2: 0.75 #Oxygen concentration at which bacteria consumption halves in uM
+ copt_o2: 10 #Oxygen concentration optimal for bacteria (will search this) in uM
+ cmin_o2: 1e-6 #Oxygen concentration (min) to avoid 1/0 divisions in uM
