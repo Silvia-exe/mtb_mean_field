@@ -5,14 +5,15 @@ metadata:
  o2_left: True
  o2_right: False
  o2_top: False
-o2_bottom: False
+ o2_bottom: False
+ inoculum: False
 
 grid:
  Lx: 4e3 #Box length in um 
- Ly: 4e3 #Box length in um
+ Ly: 2e3 #Box length in um
  Nx: 100
- Ny: 100 #Nx and Ny such that dx dy is aprox 20 um
- T: 500 #Total runtime
+ Ny: 50 #Nx and Ny such that dx dy is aprox 20 um
+ T: 200 #Total runtime
  dt: 5e-2 #Timestep
 
 diff:
@@ -34,6 +35,6 @@ bact:
  mu: 1.2e-3 #Magnetic moment of bacteria, sensitivity to the external magnetic field in pN um / microT
 
 magnetism:
- B_phi: 75 #Angle of the magnetic field with respect to the x-axis in degrees
+ B_phi: 45 #Angle of the magnetic field with respect to the x-axis in degrees
  B: 1.0 #Magnetic field magnitude in microT KEEP AT 1 FOR NOW!!
 

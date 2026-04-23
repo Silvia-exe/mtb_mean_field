@@ -19,7 +19,7 @@ if __name__ == "__main__":
     #animate_colormaps(run)
 
     mtb_plt.plot_colormaps(run)
-    run.run_save()
+    run.run()
     mtb_plt.plot_colormaps(run)
   
 

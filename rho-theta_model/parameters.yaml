@@ -8,14 +8,14 @@ grid:
  Ly: 2e3 #Box length in um
  Nx: 100
  Ny: 50 #Nx and Ny such that dx dy is aprox 20 um
- T: 200 #Total runtime
+ T: 100 #Total runtime
  dt: 5e-2 #Timestep in seconds
 
 diff:
  D_o2: 2120 #Diffusion of oxygen in water in um**2/s
- D_bact: 10 #Diffusion of self-propelling bacteria (ecoli) in water in um**2/s
- D_r: 0.0 #Rotational diffusion in rad**2/s
- gamma_r: 0.3 #1.2e-3 #Rotational drag for bacteria. Relaxation timescale (1/how long until reorienting from a tumble) in s**-1
+ D_bact: 1000 #Diffusion of self-propelling bacteria (ecoli) in water in um**2/s
+ D_r: 100.5 #Rotational diffusion in rad**2/s
+ gamma_r: 0.1 #1.2e-3 #Rotational drag for bacteria. Relaxation timescale (1/how long until reorienting from a tumble) in s**-1
  beta_p: 0.3 #Sensitivity to chemotactic reorientation torque. 
 
 o2:

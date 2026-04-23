@@ -175,23 +175,14 @@ class mtb:
         return (v_aero_x, v_aero_y)
     
     def velocity_vectors(self):
-        # Active swimming velocity from orientation
-        Px_f = np.cos(self.theta.value)
-        Py_f = np.sin(self.theta.value)
-        v_swim_x = self.v0 * Px_f
-        v_swim_y = self.v0 * Py_f
-        
-        # Aerotactic velocity component
-        o2_grad = self.c.grad
-        o2_diff = (self.c - self.copt_o2) / (self.c + self.copt_o2 + self.eps)
-        v_aero_x = -self.chi * o2_diff * o2_grad[0]
-        v_aero_y = -self.chi * o2_diff * o2_grad[1]
-        
-        # Total velocity = active swimming + aerotaxis
-        v_total_x = (v_swim_x + v_aero_x.value).reshape(v_swim_x.shape)
-        v_total_y = (v_swim_y + v_aero_y.value).reshape(v_swim_y.shape)
-        
-        return (v_total_x, v_total_y)
+        theta_face = self.theta.value
+        o2_diff_face = (self.c.value - self.copt_o2)/(self.c.value + self.copt_o2 + self.eps)
+        v0 = - 0.5 * self.chi * o2_diff_face * self.c.grad
+        v_dot_theta = v0[0]*np.cos(theta_face) + v0[1]*np.sin(theta_face)
+        vx = v_dot_theta * np.cos(theta_face)
+        vy = v_dot_theta * np.sin(theta_face)
+      
+        return (vx.value, vy.value)
 
     def init_oxygen(self, o2_file = None):
         if o2_file is None:
@@ -261,7 +252,6 @@ class mtb:
         #EQUATIONS
 
         # ---- Density ----
-        # Combines: diffusion + active swimming + aerotaxis + logistic growth
         self.eq_b = ( TransientTerm(var=self.b) == DiffusionTerm(coeff=self.D_bact, var=self.b) - ConvectionTerm(coeff=self.v, var=self.b) ) + self.p * self.b * (1 - self.b / self.K)
 
         # ---- Oxygen ----

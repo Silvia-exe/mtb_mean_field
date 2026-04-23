@@ -20,6 +20,7 @@ class mtb:
             'o2_right': bool(config['metadata']['o2_right']),
             'o2_top': bool(config['metadata']['o2_top']),
             'o2_bottom': bool(config['metadata']['o2_bottom']),
+            'inoculum': bool(config['metadata']['inoculum']),
 
             'Lx': float(config['grid']['Lx']),
             'Ly': float(config['grid']['Ly']),
@@ -62,6 +63,7 @@ class mtb:
         self.o2_right = params['o2_right']
         self.o2_top = params['o2_top']
         self.o2_bottom = params['o2_bottom']
+        self.inoculum_center = params['inoculum']
         
         self.Lx = params['Lx']
         self.Ly = params['Ly']
@@ -92,7 +94,7 @@ class mtb:
         self.mesh = Grid2D(nx= self.Nx, ny = self.Ny, dx = self.dx, dy = self.dy)
         self.mesh_bacteria = PeriodicGrid2DTopBottom(nx= self.Nx, ny = self.Ny, dx = self.dx, dy = self.dy)
 
-        self.b = CellVariable(mesh = self.mesh_bacteria, name = 'bacteria', value = self.b0)
+        self.b = CellVariable(mesh = self.mesh, name = 'bacteria', value = self.b0)
         self.c = CellVariable(mesh = self.mesh, name = 'oxygen', value = self.cmin_o2)
         self.c = self.o2_constraint()
         self.v = FaceVariable(mesh = self.mesh, rank = 1, name = 'velocity')
@@ -236,28 +238,39 @@ class mtb:
 
     def build_equations(self):
 
-        self.eq_c = TransientTerm(var=self.c) == DiffusionTerm(coeff = self.D_o2, var = self.c) - self.consumption()*self.b
+        self.eq_c = TransientTerm(var=self.c) == DiffusionTerm(coeff = self.D_o2, var = self.c) + DiffusionTerm(coeff=self.D_bact * self.b / self.K, var=self.b) - self.consumption()*self.b
       
         self.eq_b = TransientTerm( var = self.b) == DiffusionTerm(coeff = self.D_bact, var = self.b) \
                                                 - UpwindConvectionTerm(coeff = self.v, var = self.b) \
                                                 + self.p * self.b * (1-(self.b/self.K))
     def run(self):
 
-        self.c = self.init_oxygen(self.O2_init) 
-        self.b = self.inoculum_center()
+        i_check = 0
+
+        self.c = self.init_oxygen(self.O2_init)
+        if self.inoculum_center:
+            self.b = self.inoculum_center()
         self.build_equations()
         
         for _ in tqdm(self.t, desc="Running..."):
             self.update_velocity()
             self.eq_c.solve(dt = self.dt)
             self.eq_b.solve(dt = self.dt)
+            if i_check%100 == 0:
+                print('t = ' + str(self.t[i_check]) + ' min')
+                print('Total bacteria = ' + str(numerix.sum(self.b.value)*self.mesh.cellVolumes.sum()))
+            i_check += 1
+
+
+            
 
     def run_save(self):
 
         self.h5file = self.init_h5()
 
         self.c = self.init_oxygen(self.O2_init) 
-        self.b = self.inoculum_center()
+        if self.inoculum_center:
+            self.b = self.inoculum_center()
         self.build_equations()
 
         save_idx = 0

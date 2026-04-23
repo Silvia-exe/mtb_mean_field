@@ -391,7 +391,7 @@ if __name__ == "__main__":
     #animate_colormaps(run)
 
     plot_velocities(run)
-    run.run_save()
+    run.run()
     #plot_gradients(run)
     plot_velocities(run)
   
